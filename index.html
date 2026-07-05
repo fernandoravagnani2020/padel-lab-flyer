@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de flyers — Pádel Lab Academy</title>
+<meta name="description" content="Portal interno de Pádel Lab Academy para generar flyers de cupos y horarios listos para Instagram.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/padel-lab-isotipo-app.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+<style>
+/* ===== Tokens — Guía de marca Pádel Lab v1·2026 ===== */
+:root{
+  --tinta:#0E1A15;
+  --tinta-2:#13241C;
+  --cancha:#14A07A;
+  --cancha-hi:#1FC796;
+  --crema:#EAF1EC;
+  --crema-dim:rgba(234,241,236,.64);
+  --linea:rgba(234,241,236,.14);
+  --display:'Space Grotesk',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--display);background:var(--tinta);color:var(--crema);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;
+}
+::selection{background:var(--cancha);color:var(--tinta)}
+button{font:inherit;cursor:pointer;color:inherit}
+input,select{font:inherit;color:inherit}
+a{color:inherit}
+
+/* ===== Layout general ===== */
+.top{
+  display:flex;align-items:center;gap:13px;padding:16px 24px;
+  border-bottom:1px solid var(--linea);position:sticky;top:0;background:var(--tinta);z-index:20;
+}
+.top img{height:34px}
+.top b{font-size:15px;letter-spacing:.02em;display:block;line-height:1.15}
+.top small{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.42em;color:var(--cancha);display:block}
+.top .titulo-app{
+  margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--crema-dim);
+}
+.app{
+  display:grid;grid-template-columns:minmax(340px,460px) 1fr;
+  gap:0;min-height:calc(100vh - 67px);
+}
+@media(max-width:920px){.app{grid-template-columns:1fr}}
+
+/* ===== Panel editor ===== */
+.editor{
+  padding:28px 24px 60px;border-right:1px solid var(--linea);
+  display:flex;flex-direction:column;gap:26px;
+}
+@media(max-width:920px){.editor{border-right:none;border-bottom:1px solid var(--linea)}}
+.campo label,.grupo>label{
+  font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--cancha-hi);display:block;margin-bottom:8px;
+}
+.campo input[type="text"]{
+  width:100%;background:var(--tinta-2);border:1px solid var(--linea);border-radius:4px;
+  padding:10px 12px;font-size:15px;transition:border-color .2s;
+}
+.campo input[type="text"]:focus{outline:none;border-color:var(--cancha)}
+input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--cancha-hi);outline-offset:2px}
+
+/* días */
+.dia{border:1px solid var(--linea);border-radius:6px;overflow:hidden}
+.dia+.dia{margin-top:10px}
+.dia__head{
+  width:100%;display:flex;align-items:center;gap:12px;background:var(--tinta-2);
+  border:none;padding:12px 14px;text-align:left;
+}
+.dia__head:hover{background:#182e23}
+.dia__nombre{font-weight:600;font-size:15px}
+.dia__resumen{
+  margin-left:auto;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.14em;color:var(--crema-dim);text-transform:uppercase;
+}
+.dia__resumen.con-turnos{color:var(--cancha-hi)}
+.dia__flecha{color:var(--cancha);transition:transform .25s var(--ease);font-family:var(--mono)}
+.dia.abierto .dia__flecha{transform:rotate(90deg)}
+.dia__body{display:none;padding:14px;flex-direction:column;gap:10px}
+.dia.abierto .dia__body{display:flex}
+
+.turno{
+  display:grid;grid-template-columns:78px 58px 1fr 34px;gap:8px;align-items:center;
+}
+.turno input,.turno select{
+  background:var(--tinta);border:1px solid var(--linea);border-radius:4px;
+  padding:8px 9px;font-size:14px;width:100%;font-family:var(--mono);
+}
+.turno input:focus,.turno select:focus{outline:none;border-color:var(--cancha)}
+.turno input[type=number]{-moz-appearance:textfield}
+.turno input::-webkit-outer-spin-button,.turno input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.turno__borrar{
+  background:none;border:1px solid var(--linea);border-radius:4px;height:34px;
+  color:var(--crema-dim);font-size:16px;line-height:1;transition:all .2s;
+}
+.turno__borrar:hover{border-color:#d66;color:#e88}
+.turno-labels{
+  display:grid;grid-template-columns:78px 58px 1fr 34px;gap:8px;
+  font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--crema-dim);
+}
+.agregar{
+  background:none;border:1px dashed var(--cancha);border-radius:4px;color:var(--cancha-hi);
+  padding:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;transition:background .2s;
+}
+.agregar:hover{background:rgba(20,160,122,.12)}
+
+/* acciones */
+.acciones{display:flex;flex-direction:column;gap:10px;position:sticky;bottom:0;background:var(--tinta);padding:14px 0 4px;border-top:1px solid var(--linea)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;border:none;border-radius:4px;padding:14px;
+  transition:all .2s var(--ease);
+}
+.btn--verde{background:var(--cancha);color:var(--tinta)}
+.btn--verde:hover{background:var(--cancha-hi);transform:translateY(-1px)}
+.btn--verde[disabled]{opacity:.5;cursor:wait;transform:none}
+.btn--gris{background:none;border:1px solid var(--linea);color:var(--crema-dim)}
+.btn--gris:hover{border-color:#d66;color:#e88}
+.aviso{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--crema-dim);text-align:center}
+
+/* ===== Panel preview ===== */
+.previa{
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:34px 20px 60px;gap:18px;background:
+    radial-gradient(circle at 70% 20%,rgba(20,160,122,.08),transparent 60%),var(--tinta);
+}
+.previa__label{
+  font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--crema-dim);
+}
+.lienzo-wrap{width:min(100%,460px);aspect-ratio:1080/1350;position:relative}
+#escala{position:absolute;inset:0;transform-origin:top left}
+.lienzo-wrap{box-shadow:0 30px 80px -20px rgba(0,0,0,.7);border-radius:4px}
+
+/* ===== EL FLYER (1080×1350 reales) =====
+   Esta sección es la "plantilla": cuando llegue la definitiva, se restiliza
+   solo lo que está debajo de este comentario. */
+#flyer{
+  width:1080px;height:1350px;background:var(--tinta);color:var(--crema);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  font-family:var(--display);
+}
+#flyer .f-cancha{ /* líneas de cancha de fondo */
+  position:absolute;inset:0;opacity:.13;pointer-events:none;
+}
+#flyer .f-glow{
+  position:absolute;width:900px;height:900px;right:-300px;top:-260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(20,160,122,.35),transparent 65%);pointer-events:none;
+}
+.f-head{display:flex;align-items:center;gap:26px;padding:64px 72px 0;position:relative}
+.f-head img{height:86px}
+.f-head .f-marca b{font-size:40px;font-weight:700;letter-spacing:.01em;display:block;line-height:1.05}
+.f-head .f-marca span{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:.62em;color:var(--cancha-hi);display:block;margin-top:6px}
+.f-semana{
+  margin-left:auto;font-family:var(--mono);font-size:20px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--crema-dim);text-align:right;max-width:300px;
+}
+.f-titulo{
+  padding:52px 72px 40px;font-size:104px;font-weight:700;letter-spacing:-.03em;
+  line-height:.95;position:relative;
+}
+.f-titulo em{font-style:normal;color:var(--cancha-hi);display:block}
+.f-dias{
+  flex:1;display:flex;flex-direction:column;gap:22px;padding:8px 72px 0;position:relative;
+}
+.f-dia{display:flex;gap:30px;align-items:flex-start}
+.f-dia__nombre{
+  font-family:var(--mono);font-size:24px;font-weight:700;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--cancha-hi);width:190px;flex:none;padding-top:14px;
+  border-top:3px solid var(--cancha);
+}
+.f-dia__turnos{display:flex;flex-wrap:wrap;gap:14px;flex:1}
+.f-turno{
+  background:var(--tinta-2);border:2px solid rgba(234,241,236,.18);border-radius:10px;
+  padding:16px 22px;display:flex;align-items:baseline;gap:16px;
+}
+.f-turno b{font-size:34px;font-weight:700;letter-spacing:-.01em}
+.f-turno .f-cat{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--crema-dim);letter-spacing:.06em}
+.f-turno .f-cupos{
+  font-family:var(--mono);font-size:17px;font-weight:700;letter-spacing:.14em;
+  color:var(--tinta);background:var(--cancha-hi);border-radius:6px;padding:5px 12px;
+  text-transform:uppercase;align-self:center;
+}
+.f-turno.f-lleno .f-cupos{background:rgba(234,241,236,.25);color:var(--crema)}
+.f-vacio{
+  font-family:var(--mono);font-size:22px;color:var(--crema-dim);letter-spacing:.12em;
+  padding:60px 0;text-align:center;
+}
+.f-pie{
+  display:flex;align-items:center;gap:24px;padding:40px 72px 58px;position:relative;
+  border-top:2px solid rgba(234,241,236,.14);margin-top:36px;
+}
+.f-pie .f-cta{font-size:30px;font-weight:700;letter-spacing:-.01em}
+.f-pie .f-cta small{display:block;font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:.2em;color:var(--cancha-hi);text-transform:uppercase;margin-top:4px}
+.f-pie img{height:110px;margin-left:auto}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <img src="assets/padel-lab-isotipo-negativo.svg" alt="">
+  <span><b>PÁDEL LAB</b><small>ACADEMY</small></span>
+  <span class="titulo-app">Generador de flyers</span>
+</header>
+
+<div class="app">
+  <!-- ============ EDITOR ============ -->
+  <aside class="editor">
+    <div class="campo">
+      <label for="in-titulo1">Título — línea 1</label>
+      <input type="text" id="in-titulo1" data-campo="titulo1" maxlength="18">
+    </div>
+    <div class="campo">
+      <label for="in-titulo2">Título — línea 2 (verde)</label>
+      <input type="text" id="in-titulo2" data-campo="titulo2" maxlength="18">
+    </div>
+    <div class="campo">
+      <label for="in-semana">Semana / fecha</label>
+      <input type="text" id="in-semana" data-campo="semana" maxlength="34" placeholder="Semana del 7 al 12 de julio">
+    </div>
+    <div class="campo">
+      <label for="in-cta">Contacto del pie</label>
+      <input type="text" id="in-cta" data-campo="cta" maxlength="30">
+    </div>
+
+    <div class="grupo">
+      <label>Horarios por día</label>
+      <div id="dias"></div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn btn--verde" id="descargar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>
+        Descargar PNG (1080×1350)
+      </button>
+      <button class="btn btn--gris" id="limpiar">Vaciar todo</button>
+      <p class="aviso">Los datos quedan guardados en este navegador.</p>
+    </div>
+  </aside>
+
+  <!-- ============ PREVIEW ============ -->
+  <main class="previa">
+    <p class="previa__label">Vista previa · 1080 × 1350 · Feed de Instagram</p>
+    <div class="lienzo-wrap">
+      <div id="escala">
+        <div id="flyer">
+          <svg class="f-cancha" viewBox="0 0 1080 1350" preserveAspectRatio="none" aria-hidden="true">
+            <g fill="none" stroke="#EAF1EC" stroke-width="3">
+              <rect x="-200" y="120" width="1480" height="1110"/>
+              <line x1="-200" y1="675" x2="1280" y2="675"/>
+              <line x1="310" y1="120" x2="310" y2="1230"/>
+              <line x1="770" y1="120" x2="770" y2="1230"/>
+            </g>
+          </svg>
+          <div class="f-glow"></div>
+          <div class="f-head">
+            <img src="assets/padel-lab-isotipo-negativo.svg" alt="">
+            <div class="f-marca"><b>PÁDEL LAB</b><span>ACADEMY</span></div>
+            <div class="f-semana" id="f-semana"></div>
+          </div>
+          <h1 class="f-titulo"><span id="f-titulo1"></span><em id="f-titulo2"></em></h1>
+          <div class="f-dias" id="f-dias"></div>
+          <div class="f-pie">
+            <div class="f-cta"><span id="f-cta"></span><small>Reservá tu lugar</small></div>
+            <img src="assets/padel-lab-emblema.svg" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var DIAS = [
+    {id:'lun', nombre:'Lunes'},
+    {id:'mar', nombre:'Martes'},
+    {id:'mie', nombre:'Miércoles'},
+    {id:'jue', nombre:'Jueves'},
+    {id:'vie', nombre:'Viernes'},
+    {id:'sab', nombre:'Sábado'},
+    {id:'dom', nombre:'Domingo'}
+  ];
+  var CATEGORIAS = ['Iniciación','8ª','7ª','6ª','5ª','4ª','3ª','2ª','1ª','Damas','Caballeros','Mixto','Menores'];
+  var CLAVE = 'padellab-flyer-v1';
+
+  var estado = cargar() || {
+    titulo1:'CUPOS',
+    titulo2:'DISPONIBLES',
+    semana:'',
+    cta:'358 243-2355',
+    dias:{lun:[],mar:[],mie:[],jue:[],vie:[],sab:[],dom:[]}
+  };
+
+  function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){} }
+  function cargar(){
+    try{ return JSON.parse(localStorage.getItem(CLAVE)); }catch(e){ return null; }
+  }
+
+  /* ---------- editor: campos de texto ---------- */
+  document.querySelectorAll('[data-campo]').forEach(function(inp){
+    inp.value = estado[inp.dataset.campo] || '';
+    inp.addEventListener('input', function(){
+      estado[inp.dataset.campo] = inp.value;
+      pintarFlyer(); guardar();
+    });
+  });
+
+  /* ---------- editor: días y turnos ---------- */
+  var contDias = document.getElementById('dias');
+
+  function pintarEditor(){
+    contDias.innerHTML = '';
+    DIAS.forEach(function(d){
+      var turnos = estado.dias[d.id];
+      var det = document.createElement('div');
+      det.className = 'dia' + (turnos.length ? ' abierto' : '');
+      det.innerHTML =
+        '<button type="button" class="dia__head" aria-expanded="'+(turnos.length?'true':'false')+'">' +
+          '<span class="dia__flecha">›</span>' +
+          '<span class="dia__nombre">'+d.nombre+'</span>' +
+          '<span class="dia__resumen'+(turnos.length?' con-turnos':'')+'">'+
+            (turnos.length ? turnos.length+' turno'+(turnos.length>1?'s':'') : 'sin turnos')+
+          '</span>' +
+        '</button>' +
+        '<div class="dia__body">' +
+          (turnos.length ? '<div class="turno-labels"><span>Hora</span><span>Cupos</span><span>Categoría</span><span></span></div>' : '') +
+          turnos.map(function(t,i){ return filaTurno(d.id,t,i); }).join('') +
+          '<button type="button" class="agregar" data-dia="'+d.id+'">+ Agregar horario</button>' +
+        '</div>';
+      contDias.appendChild(det);
+
+      det.querySelector('.dia__head').addEventListener('click', function(){
+        det.classList.toggle('abierto');
+        this.setAttribute('aria-expanded', det.classList.contains('abierto'));
+      });
+    });
+
+    contDias.querySelectorAll('.agregar').forEach(function(b){
+      b.addEventListener('click', function(){
+        estado.dias[b.dataset.dia].push({hora:'18:00',cupos:2,cat:'4ª'});
+        pintarEditor(); pintarFlyer(); guardar();
+        var abierto = contDias.children[DIAS.findIndex(function(d){return d.id===b.dataset.dia;})];
+        abierto.classList.add('abierto');
+      });
+    });
+
+    contDias.querySelectorAll('[data-t]').forEach(function(inp){
+      var ref = inp.dataset.t.split('|'); // dia|indice|prop
+      inp.addEventListener('input', function(){
+        var v = inp.type==='number' ? Math.max(0, parseInt(inp.value||'0',10)) : inp.value;
+        estado.dias[ref[0]][+ref[1]][ref[2]] = v;
+        pintarFlyer(); guardar();
+        actualizarResumen(ref[0]);
+      });
+    });
+
+    contDias.querySelectorAll('.turno__borrar').forEach(function(b){
+      var ref = b.dataset.borrar.split('|');
+      b.addEventListener('click', function(){
+        estado.dias[ref[0]].splice(+ref[1],1);
+        pintarEditor(); pintarFlyer(); guardar();
+      });
+    });
+  }
+
+  function filaTurno(dia,t,i){
+    var opts = CATEGORIAS.map(function(c){
+      return '<option value="'+c+'"'+(t.cat===c?' selected':'')+'>'+c+'</option>';
+    }).join('');
+    return '<div class="turno">' +
+      '<input type="text" inputmode="numeric" maxlength="6" value="'+t.hora+'" data-t="'+dia+'|'+i+'|hora" aria-label="Hora" placeholder="18:00">' +
+      '<input type="number" min="0" max="99" value="'+t.cupos+'" data-t="'+dia+'|'+i+'|cupos" aria-label="Cupos">' +
+      '<select data-t="'+dia+'|'+i+'|cat" aria-label="Categoría">'+opts+'</select>' +
+      '<button type="button" class="turno__borrar" data-borrar="'+dia+'|'+i+'" aria-label="Borrar horario">×</button>' +
+    '</div>';
+  }
+
+  function actualizarResumen(diaId){
+    var idx = DIAS.findIndex(function(d){return d.id===diaId;});
+    var n = estado.dias[diaId].length;
+    var el = contDias.children[idx].querySelector('.dia__resumen');
+    el.textContent = n ? n+' turno'+(n>1?'s':'') : 'sin turnos';
+    el.classList.toggle('con-turnos', n>0);
+  }
+
+  /* ---------- flyer ---------- */
+  function pintarFlyer(){
+    document.getElementById('f-titulo1').textContent = estado.titulo1 || 'CUPOS';
+    document.getElementById('f-titulo2').textContent = estado.titulo2 || '';
+    document.getElementById('f-semana').textContent = estado.semana || '';
+    document.getElementById('f-cta').textContent = estado.cta || '';
+
+    var cont = document.getElementById('f-dias');
+    cont.innerHTML = '';
+    var totalTurnos = 0;
+
+    DIAS.forEach(function(d){
+      var turnos = estado.dias[d.id];
+      if(!turnos.length) return;
+      totalTurnos += turnos.length;
+      var fila = document.createElement('div');
+      fila.className = 'f-dia';
+      fila.innerHTML =
+        '<div class="f-dia__nombre">'+d.nombre+'</div>' +
+        '<div class="f-dia__turnos">' +
+          turnos.map(function(t){
+            var sin = !t.cupos;
+            return '<div class="f-turno'+(sin?' f-lleno':'')+'">' +
+              '<b>'+t.hora+'</b>' +
+              '<span class="f-cat">'+t.cat+'</span>' +
+              '<span class="f-cupos">'+(sin ? 'COMPLETO' : t.cupos+' '+(t.cupos===1?'CUPO':'CUPOS'))+'</span>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+      cont.appendChild(fila);
+    });
+
+    if(!totalTurnos){
+      cont.innerHTML = '<p class="f-vacio">— Agregá horarios en el panel para armar el flyer —</p>';
+    }
+
+    // compactar si hay muchos turnos para que nada se corte
+    var f = document.getElementById('flyer');
+    f.style.setProperty('--densidad', totalTurnos);
+    cont.style.gap = totalTurnos > 10 ? '14px' : '22px';
+    document.querySelectorAll('#flyer .f-turno b').forEach(function(b){
+      b.style.fontSize = totalTurnos > 10 ? '28px' : '34px';
+    });
+  }
+
+  /* ---------- escala de la vista previa ---------- */
+  function escalar(){
+    var wrap = document.querySelector('.lienzo-wrap');
+    var esc = document.getElementById('escala');
+    esc.style.transform = 'scale(' + (wrap.clientWidth / 1080) + ')';
+  }
+  window.addEventListener('resize', escalar);
+
+  /* ---------- exportar ---------- */
+  document.getElementById('descargar').addEventListener('click', function(){
+    var btn = this;
+    btn.disabled = true;
+    var original = btn.innerHTML;
+    btn.textContent = 'Generando…';
+
+    // clon a tamaño real, sin transform, fuera de pantalla
+    var clon = document.getElementById('flyer').cloneNode(true);
+    var caja = document.createElement('div');
+    caja.style.cssText = 'position:fixed;left:-2000px;top:0;width:1080px;height:1350px;overflow:hidden;z-index:-1;';
+    caja.appendChild(clon);
+    document.body.appendChild(caja);
+
+    document.fonts.ready.then(function(){
+      return html2canvas(clon, {backgroundColor:'#0E1A15', scale:1, logging:false});
+    }).then(function(canvas){
+      var a = document.createElement('a');
+      var fecha = new Date().toISOString().slice(0,10);
+      a.download = 'flyer-padel-lab-' + fecha + '.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }).catch(function(err){
+      alert('No se pudo generar el PNG: ' + err.message);
+    }).finally(function(){
+      caja.remove();
+      btn.disabled = false;
+      btn.innerHTML = original;
+    });
+  });
+
+  /* ---------- vaciar ---------- */
+  document.getElementById('limpiar').addEventListener('click', function(){
+    if(!confirm('¿Vaciar todos los horarios y textos del flyer?')) return;
+    estado.dias = {lun:[],mar:[],mie:[],jue:[],vie:[],sab:[],dom:[]};
+    estado.semana = '';
+    document.querySelectorAll('[data-campo]').forEach(function(inp){ inp.value = estado[inp.dataset.campo] || ''; });
+    pintarEditor(); pintarFlyer(); guardar();
+  });
+
+  /* ---------- init ---------- */
+  pintarEditor();
+  pintarFlyer();
+  escalar();
+})();
+</script>
+</body>
+</html>
