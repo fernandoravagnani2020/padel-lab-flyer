@@ -290,7 +290,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 
   var estado = cargar() || {
     fecha: manana(),
-    turnos: [{hora:'18:00', titulo:'Clase grupal', dur:90, cat:'5ª', div:'Ambas', cupos:2}]
+    turnos: [{hora:'18:00', titulo:'Clase grupal', dur:60, cat:'Libres', div:'Ambas', cupos:2}]
   };
 
   function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){} }
@@ -327,7 +327,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
         '</div>' +
         '<div class="campo-mini"><span>Clase</span><input type="text" list="clases" maxlength="26" value="'+t.titulo+'" data-t="'+i+'|titulo"></div>' +
         '<div class="turno__fila turno__fila--c">' +
-          '<div class="campo-mini"><span>Minutos</span><input type="number" min="15" max="240" step="15" value="'+t.dur+'" data-t="'+i+'|dur"></div>' +
+          '<div class="campo-mini"><span>Minutos</span><input type="number" min="15" max="240" step="15" value="'+t.dur+'" data-t="'+i+'|dur" placeholder="60"></div>' +
           '<div class="campo-mini"><span>Categoría</span><select data-t="'+i+'|cat">'+opciones(CATEGORIAS,t.cat)+'</select></div>' +
           '<div class="campo-mini"><span>División</span><select data-t="'+i+'|div">'+opciones(DIVISIONES,t.div)+'</select></div>' +
         '</div>';
@@ -341,6 +341,14 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
         estado.turnos[+ref[0]][ref[1]] = v;
         pintarFlyer(); guardar();
       });
+      if(ref[1]==='hora'){
+        inp.addEventListener('blur', function(){
+          var v = normalizarHora(inp.value);
+          inp.value = v;
+          estado.turnos[+ref[0]].hora = v;
+          pintarFlyer(); guardar();
+        });
+      }
     });
 
     cont.querySelectorAll('.turno__borrar').forEach(function(b){
@@ -355,12 +363,24 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     var ultimo = estado.turnos[estado.turnos.length-1];
     estado.turnos.push({
       hora: '', titulo: ultimo ? ultimo.titulo : 'Clase grupal',
-      dur: ultimo ? ultimo.dur : 90, cat:'Libres', div:'Ambas', cupos:2
+      dur: ultimo ? ultimo.dur : 60, cat:'Libres', div:'Ambas', cupos:2
     });
     pintarEditor(); pintarFlyer(); guardar();
     var inputs = cont.querySelectorAll('.turno:last-child input');
     if(inputs.length) inputs[0].focus();
   });
+
+  /* ---------- hora: "18" → "18:00", "1830" → "18:30" ---------- */
+  function normalizarHora(v){
+    v = String(v||'').trim().replace(/[.,;hH\s]+/g, ':').replace(/:+/g, ':').replace(/:$/, '');
+    if(!v) return '';
+    var pad = function(n){ return String(parseInt(n,10)).padStart(2,'0'); };
+    if(/^\d{1,2}$/.test(v)) return pad(v) + ':00';                             // 18 → 18:00
+    if(/^\d{3,4}$/.test(v)) return pad(v.slice(0, v.length-2)) + ':' + v.slice(-2); // 1830 → 18:30
+    var m = v.match(/^(\d{1,2}):(\d{1,2})$/);
+    if(m) return pad(m[1]) + ':' + (m[2].length===1 ? m[2]+'0' : m[2]);        // 18:3 → 18:30
+    return v;
+  }
 
   /* ---------- flyer ---------- */
   function subtitulo(t){
@@ -437,13 +457,28 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     caja.appendChild(clon);
     document.body.appendChild(caja);
 
+    var nombre = 'flyer-' + estado.fecha + '.png';
+
+    function descargarClasico(canvas){
+      var a = document.createElement('a');
+      a.download = nombre;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
     document.fonts.ready.then(function(){
       return html2canvas(clon, {backgroundColor:'#EDEAE2', scale:1, logging:false});
     }).then(function(canvas){
-      var a = document.createElement('a');
-      a.download = 'flyer-' + estado.fecha + '.png';
-      a.href = canvas.toDataURL('image/png');
-      a.click();
+      return new Promise(function(res){ canvas.toBlob(function(b){ res({canvas:canvas, blob:b}); }, 'image/png'); });
+    }).then(function(r){
+      // iPhone: hoja de compartir nativa para guardar en la galería
+      var file = r.blob ? new File([r.blob], nombre, {type:'image/png'}) : null;
+      if(file && navigator.canShare && navigator.canShare({files:[file]})){
+        return navigator.share({files:[file]}).catch(function(err){
+          if(err && err.name !== 'AbortError') descargarClasico(r.canvas); // cancelar no es error
+        });
+      }
+      descargarClasico(r.canvas);
     }).catch(function(err){
       alert('No se pudo generar el PNG: ' + err.message);
     }).finally(function(){
