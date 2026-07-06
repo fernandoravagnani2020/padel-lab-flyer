@@ -1,11 +1,11 @@
 /* Pádel Lab Flyers — service worker: red primero, caché como respaldo */
-var CACHE = 'pl-flyer-v1';
+var CACHE = 'pl-flyer-v2';
 var BASE = [
   './',
   './index.html',
   './manifest.json',
+  './assets/plantilla.png',
   './assets/padel-lab-isotipo-negativo.svg',
-  './assets/padel-lab-isotipo-positivo.svg',
   './assets/padel-lab-isotipo-app.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',

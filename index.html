@@ -17,7 +17,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 <style>
 /* ===== Tokens — Guía de marca Pádel Lab v1·2026 ===== */
 :root{
@@ -56,9 +55,7 @@ input,select{font:inherit;color:inherit}
   margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--crema-dim);text-align:right;
 }
-.app{
-  display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:0;
-}
+.app{display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:0}
 @media(max-width:920px){.app{grid-template-columns:1fr}}
 
 /* ===== Editor ===== */
@@ -71,7 +68,7 @@ input,select{font:inherit;color:inherit}
   font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.24em;
   text-transform:uppercase;color:var(--cancha-hi);display:block;margin-bottom:8px;
 }
-.campo input[type="text"],.campo input[type="date"]{
+.campo input[type="date"]{
   width:100%;background:var(--tinta-2);border:1px solid var(--linea);border-radius:6px;
   padding:12px;font-size:16px;transition:border-color .2s;min-height:48px;
   color-scheme:dark;-webkit-appearance:none;appearance:none;
@@ -140,78 +137,10 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.3em;
   text-transform:uppercase;color:var(--crema-dim);
 }
-.lienzo-wrap{
-  width:min(100%,380px);aspect-ratio:1080/1920;position:relative;
-  box-shadow:0 30px 80px -20px rgba(0,0,0,.7);border-radius:6px;overflow:hidden;
+#lienzo{
+  width:min(100%,380px);height:auto;display:block;border-radius:6px;
+  box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
 }
-#escala{position:absolute;inset:0;transform-origin:top left}
-
-/* =====================================================================
-   EL FLYER — plantilla oficial 1080×1920 (historia de Instagram)
-   Fondo crema, monograma de agua, lista de turnos y botón "Reservá tu turno"
-   ===================================================================== */
-#flyer{
-  width:1080px;height:1920px;background:#EDEAE2;color:#16181A;
-  position:relative;overflow:hidden;font-family:var(--display);
-}
-#flyer .f-marca-agua{
-  position:absolute;width:790px;right:-175px;bottom:-215px;pointer-events:none;
-}
-#flyer .f-marca-agua path{fill:#DFE7DE}
-.f-marca{position:absolute;top:150px;left:96px;display:flex;align-items:center;gap:24px}
-.f-marca img{height:90px}
-.f-marca b{font-size:40px;font-weight:700;color:#16181A;letter-spacing:.01em;line-height:1;display:block}
-.f-marca small{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:.52em;color:#14A07A;display:block;margin-top:9px}
-.f-eyebrow{
-  position:absolute;top:318px;left:98px;display:flex;align-items:center;gap:24px;
-  font-family:var(--mono);font-weight:600;font-size:25px;letter-spacing:.4em;
-  text-transform:uppercase;color:#14A07A;
-}
-.f-eyebrow::before{content:"";width:58px;height:3px;background:#14A07A;flex:none}
-.f-titulo{
-  position:absolute;top:372px;left:92px;right:96px;
-  font-weight:700;font-size:152px;line-height:.94;letter-spacing:-.02em;color:#16181A;
-  text-transform:uppercase;
-}
-.f-titulo .verde{color:#14A07A}
-.f-lista{position:absolute;top:662px;left:96px;right:96px}
-.f-row{
-  display:flex;align-items:center;gap:40px;
-  padding:36px 0;border-top:2px solid #DBD8CF;
-}
-.f-row:last-child{border-bottom:2px solid #DBD8CF}
-.f-hora{font-size:66px;font-weight:700;width:238px;flex:none;letter-spacing:-.01em}
-.f-info{flex:1;min-width:0}
-.f-nombre{font-size:37px;font-weight:700;letter-spacing:-.01em}
-.f-sub{
-  font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:.18em;
-  color:#8E8C85;margin-top:11px;text-transform:uppercase;white-space:nowrap;
-}
-.f-chip{
-  flex:none;font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:#0F8666;background:rgba(20,160,122,.10);
-  border:2.5px solid rgba(20,160,122,.55);border-radius:999px;padding:15px 30px;
-}
-.f-row.f-lleno .f-hora,.f-row.f-lleno .f-nombre{color:#A5A39B}
-.f-row.f-lleno .f-sub{color:#B3B1A9}
-.f-row.f-lleno .f-chip{color:#A5A39B;background:transparent;border-color:#C6C4BB}
-.f-vacio{
-  font-family:var(--mono);font-size:23px;color:#A5A39B;letter-spacing:.14em;
-  padding:70px 0;text-align:center;
-}
-.f-boton{
-  position:absolute;left:96px;right:96px;bottom:148px;height:126px;border-radius:999px;
-  background:#131414;color:#F3F1EA;display:flex;align-items:center;justify-content:center;gap:24px;
-  font-size:42px;font-weight:700;letter-spacing:-.01em;
-}
-.f-boton svg{width:52px;height:52px;flex:none}
-
-/* compacto: 7 turnos o más */
-#flyer.f-compacto .f-row{padding:24px 0;gap:32px}
-#flyer.f-compacto .f-hora{font-size:54px;width:200px}
-#flyer.f-compacto .f-nombre{font-size:32px}
-#flyer.f-compacto .f-sub{font-size:18px;margin-top:8px}
-#flyer.f-compacto .f-chip{font-size:18px;padding:11px 24px}
 </style>
 </head>
 <body>
@@ -249,28 +178,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   <!-- ============ VISTA PREVIA ============ -->
   <main class="previa">
     <p class="previa__label">Vista previa · 1080 × 1920 · Historia de Instagram</p>
-    <div class="lienzo-wrap">
-      <div id="escala">
-        <div id="flyer">
-          <svg class="f-marca-agua" viewBox="0 0 378.23 407.19" aria-hidden="true">
-            <path d="M244.32,352.75v-202.15c-2.16,6.88-5.06,13.34-8.73,19.38-8.92,14.67-21.03,26.02-36.29,34.03-3.3,1.73-6.72,3.24-10.21,4.6v198.59h189.14v-54.44h-133.9Z"/>
-            <path d="M219.35,45.82c-8.62-14.52-20.57-25.78-35.84-33.8-7.84-4.11-16.3-7.15-25.37-9.15,0,.42.03.83.03,1.25,0,19.32-4.03,37.72-11.26,54.41,4.56,1.91,8.69,4.45,12.32,7.7,8.77,7.87,13.16,18.6,13.16,32.21v4.54c0,13.61-4.39,24.35-13.16,32.21-8.78,7.87-20.27,11.8-34.48,11.8H59.89v-11.18c-12.4,3.69-25.51,5.7-39.09,5.7-7.07,0-14.01-.54-20.79-1.57v177.64h59.89v-116.14h70.77c19.35,0,36.67-4.01,51.95-12.02,15.27-8.01,27.37-19.35,36.29-34.03,8.92-14.67,13.38-31.83,13.38-51.49v-6.35c0-19.96-4.31-37.2-12.93-51.72Z"/>
-            <path d="M0,0v128.88c6.77,1.12,13.71,1.74,20.79,1.74,13.64,0,26.77-2.2,39.09-6.21V54.44h64.88c4.1,0,7.95.37,11.6,1.02,7-15.7,10.93-33.07,10.93-51.34,0-1.04-.05-2.06-.08-3.1-5.33-.66-10.83-1.03-16.55-1.03H0Z"/>
-          </svg>
-          <div class="f-marca">
-            <img src="assets/padel-lab-isotipo-positivo.svg" alt="">
-            <span><b>PÁDEL LAB</b><small>ACADEMY</small></span>
-          </div>
-          <p class="f-eyebrow">Turnos disponibles</p>
-          <h1 class="f-titulo" id="f-titulo"></h1>
-          <div class="f-lista" id="f-lista"></div>
-          <div class="f-boton">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#14A07A"/><path fill="#F3F1EA" d="M12 4.5a7.5 7.5 0 0 0-6.45 11.32L4.5 19.5l3.8-1a7.5 7.5 0 1 0 3.7-14Zm4.05 10.57c-.15.53-.97.98-1.42 1.05-.38.08-.83.08-1.35-.07-.3-.08-.75-.23-1.28-.45-2.25-.98-3.67-3.23-3.82-3.38-.08-.15-.9-1.2-.9-2.32 0-1.13.6-1.65.75-1.88.22-.22.45-.3.6-.3h.45c.15 0 .3 0 .45.38.15.37.6 1.42.6 1.5.08.07.08.22 0 .37-.3.68-.68.75-.52 1.05.67 1.13 1.5 1.8 2.47 2.25.23.15.38.08.53-.07l.75-.9c.15-.23.3-.15.52-.08l1.58.75c.22.15.37.15.45.3 0 .08 0 .53-.15 1.05Z"/></svg>
-            Reservá tu turno
-          </div>
-        </div>
-      </div>
-    </div>
+    <canvas id="lienzo" width="1080" height="1920" aria-label="Vista previa del flyer"></canvas>
   </main>
 </div>
 
@@ -280,11 +188,25 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   var MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
   var CATEGORIAS = ['Libres','Principiante','8ª','7ª','6ª','5ª','4ª','3ª','2ª','1ª'];
   var DIVISIONES = ['Ambas','Masculina','Femenina'];
-  var CLASES = ['Clase grupal','Clase privada 1-a-1','Clínica grupal','Preparación torneos','Escuela juvenil'];
   var CLAVE = 'padellab-flyer-v2';
+
+  /* ===== Colores y métricas de la plantilla (medidos del ejemplo aprobado) ===== */
+  var T = {
+    tinta:'#16181A', verde:'#14A07A', grisTexto:'#8E8C85',
+    apagado:'#A5A39B', apagadoSub:'#B3B1A9', bordeApagado:'#C6C4BB',
+    linea:'#DBD8CF', chipTexto:'#0F8666', chipFondo:'rgba(20,160,122,.10)', chipBorde:'rgba(20,160,122,.55)',
+    margen:96, derecha:984,
+    tituloX:92, titulo1Y:471, titulo2Y:580, tituloPx:124,
+    listaY:670, filaAlto:143, filaMax:6, listaFin:1620,
+    horaPx:62, nombrePx:36, subPx:20, chipPx:20
+  };
 
   function manana(){
     var d = new Date(); d.setDate(d.getDate()+1);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function hoy(){
+    var d = new Date();
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   }
 
@@ -292,11 +214,147 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     fecha: manana(),
     turnos: [{hora:'18:00', titulo:'Clase grupal', dur:60, cat:'Libres', div:'Ambas', cupos:2}]
   };
+  if(estado.fecha < hoy()) estado.fecha = manana(); // flyer viejo → arranca en mañana
 
   function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){} }
   function cargar(){ try{ return JSON.parse(localStorage.getItem(CLAVE)); }catch(e){ return null; } }
 
-  /* ---------- fecha ---------- */
+  /* ===== Recursos del lienzo ===== */
+  var lienzo = document.getElementById('lienzo');
+  var ctx = lienzo.getContext('2d');
+  var plantilla = new Image();
+  var plantillaLista = new Promise(function(res){ plantilla.onload = res; plantilla.onerror = res; });
+  plantilla.src = 'assets/plantilla.png';
+
+  var fuentesListas = Promise.all([
+    document.fonts.load('700 '+T.tituloPx+'px "Space Grotesk"'),
+    document.fonts.load('700 '+T.horaPx+'px "Space Grotesk"'),
+    document.fonts.load('700 '+T.nombrePx+'px "Space Grotesk"'),
+    document.fonts.load('600 '+T.subPx+'px "JetBrains Mono"'),
+    document.fonts.load('700 '+T.chipPx+'px "JetBrains Mono"')
+  ]).catch(function(){});
+
+  /* texto con tracking (compatible con todos los navegadores) */
+  function medirTracked(texto, tracking){
+    var w = 0;
+    for(var i=0;i<texto.length;i++) w += ctx.measureText(texto[i]).width + (i<texto.length-1 ? tracking : 0);
+    return w;
+  }
+  function dibujarTracked(texto, x, y, tracking){
+    var cx = x;
+    for(var i=0;i<texto.length;i++){
+      ctx.fillText(texto[i], cx, y);
+      cx += ctx.measureText(texto[i]).width + tracking;
+    }
+  }
+  function pastilla(x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  /* ===== Render del flyer ===== */
+  function subtitulo(t){
+    var partes = [];
+    if(t.dur) partes.push(t.dur+' MIN');
+    var cat = (t.cat==='Libres' || t.cat==='Cupos libres') ? 'TODOS LOS NIVELES' : String(t.cat).toUpperCase();
+    if(t.div && t.div!=='Ambas') cat += ' ' + t.div.toUpperCase();
+    partes.push(cat);
+    return partes.join(' · ');
+  }
+  function ordenarHora(a,b){ return (a.hora||'99').localeCompare(b.hora||'99'); }
+
+  function render(){
+    ctx.clearRect(0,0,1080,1920);
+    if(plantilla.complete && plantilla.naturalWidth) ctx.drawImage(plantilla,0,0,1080,1920);
+    else { ctx.fillStyle = '#EDEAE2'; ctx.fillRect(0,0,1080,1920); }
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+
+    /* título: día + fecha */
+    var p = estado.fecha.split('-');
+    var f = new Date(+p[0], +p[1]-1, +p[2]);
+    ctx.fillStyle = T.tinta;
+    ctx.font = '700 '+T.tituloPx+'px "Space Grotesk"';
+    dibujarTracked(DIAS_SEMANA[f.getDay()], T.tituloX, T.titulo1Y, -2);
+    var dia = String(f.getDate());
+    dibujarTracked(dia, T.tituloX, T.titulo2Y, -2);
+    var wDia = medirTracked(dia, -2) + ctx.measureText(' ').width + 6;
+    ctx.fillStyle = T.verde;
+    dibujarTracked(MESES[f.getMonth()], T.tituloX + wDia, T.titulo2Y, -2);
+
+    /* filas de turnos */
+    var turnos = estado.turnos.slice().sort(ordenarHora);
+    if(!turnos.length) return;
+
+    var paso = turnos.length <= T.filaMax ? T.filaAlto
+             : Math.floor((T.listaFin - T.listaY) / turnos.length);
+    var compacta = paso < T.filaAlto ? paso / T.filaAlto : 1;
+
+    function lineaDivisoria(y){
+      ctx.fillStyle = T.linea;
+      ctx.fillRect(T.margen, y, T.derecha - T.margen, 2);
+    }
+
+    turnos.forEach(function(t, k){
+      var yTop = T.listaY + paso * k;
+      var centro = yTop + paso/2;
+      var sin = !t.cupos;
+      lineaDivisoria(yTop);
+
+      /* hora */
+      ctx.fillStyle = sin ? T.apagado : T.tinta;
+      ctx.font = '700 '+Math.round(T.horaPx*compacta)+'px "Space Grotesk"';
+      ctx.fillText(t.hora || '--:--', T.margen, centro + Math.round(21*compacta));
+
+      /* chip (se dibuja antes para saber cuánto lugar queda) */
+      var chipTexto = sin ? 'COMPLETO' : t.cupos + ' ' + (t.cupos===1 ? 'CUPO' : 'CUPOS');
+      ctx.font = '700 '+T.chipPx+'px "JetBrains Mono"';
+      var wChipTexto = medirTracked(chipTexto, 3);
+      var chipH = 52, chipW = wChipTexto + 60;
+      var chipX = T.derecha - chipW, chipY = centro - chipH/2;
+      pastilla(chipX, chipY, chipW, chipH, chipH/2);
+      if(!sin){ ctx.fillStyle = T.chipFondo; ctx.fill(); }
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = sin ? T.bordeApagado : T.chipBorde;
+      ctx.stroke();
+      ctx.fillStyle = sin ? T.apagado : T.chipTexto;
+      dibujarTracked(chipTexto, chipX + (chipW - wChipTexto)/2, centro + 7, 3);
+
+      /* nombre de la clase */
+      var xInfo = 324, anchoInfo = chipX - 30 - xInfo;
+      ctx.fillStyle = sin ? T.apagado : T.tinta;
+      var nombrePx = Math.round(T.nombrePx * compacta);
+      ctx.font = '700 '+nombrePx+'px "Space Grotesk"';
+      var nombre = t.titulo || 'Clase';
+      while(ctx.measureText(nombre).width > anchoInfo && nombrePx > 22){
+        nombrePx -= 1;
+        ctx.font = '700 '+nombrePx+'px "Space Grotesk"';
+      }
+      ctx.fillText(nombre, xInfo, centro - Math.round(2*compacta));
+
+      /* bajada técnica */
+      ctx.fillStyle = sin ? T.apagadoSub : T.grisTexto;
+      var subPx = T.subPx, subTexto = subtitulo(t);
+      ctx.font = '600 '+subPx+'px "JetBrains Mono"';
+      while(medirTracked(subTexto, 3.5) > anchoInfo && subPx > 13){
+        subPx -= 1;
+        ctx.font = '600 '+subPx+'px "JetBrains Mono"';
+      }
+      dibujarTracked(subTexto, xInfo, centro + Math.round(56*compacta) - (paso < 100 ? 6 : 0), 3.5);
+    });
+    lineaDivisoria(T.listaY + paso * turnos.length);
+  }
+
+  function pintarFlyer(){
+    Promise.all([plantillaLista, fuentesListas]).then(render);
+  }
+
+  /* ===== Editor ===== */
   var inFecha = document.getElementById('in-fecha');
   inFecha.value = estado.fecha;
   inFecha.addEventListener('input', function(){
@@ -305,7 +363,6 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     pintarFlyer(); guardar();
   });
 
-  /* ---------- turnos ---------- */
   var cont = document.getElementById('turnos');
 
   function opciones(lista, actual){
@@ -375,114 +432,42 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     v = String(v||'').trim().replace(/[.,;hH\s]+/g, ':').replace(/:+/g, ':').replace(/:$/, '');
     if(!v) return '';
     var pad = function(n){ return String(parseInt(n,10)).padStart(2,'0'); };
-    if(/^\d{1,2}$/.test(v)) return pad(v) + ':00';                             // 18 → 18:00
-    if(/^\d{3,4}$/.test(v)) return pad(v.slice(0, v.length-2)) + ':' + v.slice(-2); // 1830 → 18:30
+    if(/^\d{1,2}$/.test(v)) return pad(v) + ':00';
+    if(/^\d{3,4}$/.test(v)) return pad(v.slice(0, v.length-2)) + ':' + v.slice(-2);
     var m = v.match(/^(\d{1,2}):(\d{1,2})$/);
-    if(m) return pad(m[1]) + ':' + (m[2].length===1 ? m[2]+'0' : m[2]);        // 18:3 → 18:30
+    if(m) return pad(m[1]) + ':' + (m[2].length===1 ? m[2]+'0' : m[2]);
     return v;
   }
 
-  /* ---------- flyer ---------- */
-  function subtitulo(t){
-    var partes = [];
-    if(t.dur) partes.push(t.dur+' MIN');
-    var cat = (t.cat==='Libres' || t.cat==='Cupos libres') ? 'TODOS LOS NIVELES' : t.cat.toUpperCase();
-    if(t.div && t.div!=='Ambas') cat += ' ' + t.div.toUpperCase();
-    partes.push(cat);
-    return partes.join(' · ');
-  }
-
-  function ordenarHora(a,b){
-    return (a.hora||'99').localeCompare(b.hora||'99');
-  }
-
-  function pintarFlyer(){
-    // título: día de la semana + fecha
-    var p = estado.fecha.split('-'); // YYYY-MM-DD, local
-    var f = new Date(+p[0], +p[1]-1, +p[2]);
-    document.getElementById('f-titulo').innerHTML =
-      DIAS_SEMANA[f.getDay()] + '<br>' + f.getDate() + ' <span class="verde">' + MESES[f.getMonth()] + '</span>';
-
-    var lista = document.getElementById('f-lista');
-    lista.innerHTML = '';
-    var turnos = estado.turnos.slice().sort(ordenarHora);
-
-    turnos.forEach(function(t){
-      var sin = !t.cupos;
-      var row = document.createElement('div');
-      row.className = 'f-row' + (sin ? ' f-lleno' : '');
-      row.innerHTML =
-        '<div class="f-hora">'+(t.hora||'--:--')+'</div>' +
-        '<div class="f-info">' +
-          '<div class="f-nombre">'+(t.titulo||'Clase')+'</div>' +
-          '<div class="f-sub">'+subtitulo(t)+'</div>' +
-        '</div>' +
-        '<div class="f-chip">'+(sin ? 'COMPLETO' : t.cupos+' '+(t.cupos===1?'CUPO':'CUPOS'))+'</div>';
-      lista.appendChild(row);
-    });
-
-    if(!turnos.length){
-      lista.innerHTML = '<p class="f-vacio">— Agregá turnos en el panel —</p>';
-    }
-    document.getElementById('flyer').classList.toggle('f-compacto', turnos.length >= 7);
-
-    // bajadas siempre en una línea: achicar hasta que entren
-    lista.querySelectorAll('.f-sub').forEach(function(el){
-      var px = 21;
-      el.style.fontSize = '';
-      while(el.scrollWidth > el.clientWidth && px > 14){
-        px -= 1;
-        el.style.fontSize = px + 'px';
-      }
-    });
-  }
-
-  /* ---------- escala vista previa ---------- */
-  function escalar(){
-    var wrap = document.querySelector('.lienzo-wrap');
-    document.getElementById('escala').style.transform = 'scale(' + (wrap.clientWidth / 1080) + ')';
-  }
-  window.addEventListener('resize', escalar);
-
-  /* ---------- exportar PNG ---------- */
+  /* ===== Exportar: hoja de compartir en iPhone, descarga en desktop ===== */
   document.getElementById('descargar').addEventListener('click', function(){
     var btn = this;
     btn.disabled = true;
     var original = btn.innerHTML;
     btn.textContent = 'Generando…';
-
-    var clon = document.getElementById('flyer').cloneNode(true);
-    var caja = document.createElement('div');
-    caja.style.cssText = 'position:fixed;left:-3000px;top:0;width:1080px;height:1920px;overflow:hidden;z-index:-1;';
-    caja.appendChild(clon);
-    document.body.appendChild(caja);
-
     var nombre = 'flyer-' + estado.fecha + '.png';
 
-    function descargarClasico(canvas){
+    function descargarClasico(){
       var a = document.createElement('a');
       a.download = nombre;
-      a.href = canvas.toDataURL('image/png');
+      a.href = lienzo.toDataURL('image/png');
       a.click();
     }
 
-    document.fonts.ready.then(function(){
-      return html2canvas(clon, {backgroundColor:'#EDEAE2', scale:1, logging:false});
-    }).then(function(canvas){
-      return new Promise(function(res){ canvas.toBlob(function(b){ res({canvas:canvas, blob:b}); }, 'image/png'); });
-    }).then(function(r){
-      // iPhone: hoja de compartir nativa para guardar en la galería
-      var file = r.blob ? new File([r.blob], nombre, {type:'image/png'}) : null;
+    Promise.all([plantillaLista, fuentesListas]).then(function(){
+      render();
+      return new Promise(function(res){ lienzo.toBlob(res, 'image/png'); });
+    }).then(function(blob){
+      var file = blob ? new File([blob], nombre, {type:'image/png'}) : null;
       if(file && navigator.canShare && navigator.canShare({files:[file]})){
         return navigator.share({files:[file]}).catch(function(err){
-          if(err && err.name !== 'AbortError') descargarClasico(r.canvas); // cancelar no es error
+          if(err && err.name !== 'AbortError') descargarClasico();
         });
       }
-      descargarClasico(r.canvas);
+      descargarClasico();
     }).catch(function(err){
       alert('No se pudo generar el PNG: ' + err.message);
     }).finally(function(){
-      caja.remove();
       btn.disabled = false;
       btn.innerHTML = original;
     });
@@ -503,7 +488,6 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   /* ---------- init ---------- */
   pintarEditor();
   pintarFlyer();
-  escalar();
 })();
 </script>
 <datalist id="clases">
