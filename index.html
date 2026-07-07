@@ -35,7 +35,8 @@
 html{background:var(--tinta)}
 body{
   font-family:var(--display);background:var(--tinta);color:var(--crema);
-  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  height:100dvh;overflow:hidden;display:flex;flex-direction:column;
 }
 ::selection{background:var(--cancha);color:var(--tinta)}
 button{font:inherit;cursor:pointer;color:inherit}
@@ -55,15 +56,21 @@ input,select{font:inherit;color:inherit}
   margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;color:var(--crema-dim);text-align:right;
 }
-.app{display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:0}
+.app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(340px,440px) 1fr;gap:0}
 @media(max-width:920px){.app{grid-template-columns:1fr}}
 
 /* ===== Editor ===== */
 .editor{
-  padding:22px calc(20px + env(safe-area-inset-right)) 30px calc(20px + env(safe-area-inset-left));
-  border-right:1px solid var(--linea);display:flex;flex-direction:column;gap:22px;
+  padding:16px calc(20px + env(safe-area-inset-right)) 0 calc(20px + env(safe-area-inset-left));
+  border-right:1px solid var(--linea);display:flex;flex-direction:column;gap:14px;
+  min-height:0;overflow:hidden;
 }
 @media(max-width:920px){.editor{border-right:none}}
+.grupo{flex:1;min-height:0;display:flex;flex-direction:column}
+.lista-scroll{
+  flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:8px;padding-bottom:10px;
+}
 .campo>label,.grupo>label{
   font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.24em;
   text-transform:uppercase;color:var(--cancha-hi);display:block;margin-bottom:8px;
@@ -77,43 +84,43 @@ input,select{font:inherit;color:inherit}
 input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--cancha-hi);outline-offset:2px}
 
 /* turnos */
-#turnos{display:flex;flex-direction:column;gap:12px}
+#turnos{display:flex;flex-direction:column;gap:8px}
 .turno{
-  border:1px solid var(--linea);border-radius:8px;padding:14px;background:var(--tinta-2);
-  display:flex;flex-direction:column;gap:10px;
+  border:1px solid var(--linea);border-radius:8px;padding:10px;background:var(--tinta-2);
+  display:flex;flex-direction:column;gap:7px;
 }
-.turno__fila{display:grid;gap:8px}
+.turno__fila{display:grid;gap:7px}
 .turno__fila--a{grid-template-columns:92px 76px 1fr;align-items:end}
 .turno__fila--a .turno__borrar{justify-self:end;width:48px}
 .turno__fila--c{grid-template-columns:92px 1fr 1fr}
 .campo-mini span{
-  display:block;font-family:var(--mono);font-size:8.5px;font-weight:600;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--crema-dim);margin-bottom:5px;
+  display:block;font-family:var(--mono);font-size:8px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--crema-dim);margin-bottom:3px;
 }
 .campo-mini input,.campo-mini select{
   width:100%;background:var(--tinta);border:1px solid var(--linea);border-radius:6px;
-  padding:10px 9px;font-size:15px;font-family:var(--mono);min-height:44px;
+  padding:7px 8px;font-size:15px;font-family:var(--mono);min-height:40px;
   -webkit-appearance:none;appearance:none;color-scheme:dark;
 }
 .campo-mini input:focus,.campo-mini select:focus{outline:none;border-color:var(--cancha)}
 .campo-mini input[type=number]{-moz-appearance:textfield}
 .campo-mini input::-webkit-outer-spin-button,.campo-mini input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .turno__borrar{
-  background:none;border:1px solid var(--linea);border-radius:6px;min-height:44px;
+  background:none;border:1px solid var(--linea);border-radius:6px;min-height:40px;
   color:var(--crema-dim);font-size:17px;line-height:1;transition:all .2s;
 }
 .turno__borrar:hover{border-color:#d66;color:#e88}
 .agregar{
   background:none;border:1px dashed var(--cancha);border-radius:6px;color:var(--cancha-hi);
-  padding:13px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;
-  text-transform:uppercase;transition:background .2s;width:100%;min-height:48px;
+  padding:10px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;transition:background .2s;width:100%;min-height:44px;flex:none;
 }
 .agregar:hover{background:rgba(20,160,122,.12)}
 
 /* acciones */
 .acciones{
-  display:flex;flex-direction:column;gap:10px;position:sticky;bottom:0;background:var(--tinta);
-  padding:14px 0 calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--linea);
+  flex:none;display:flex;flex-direction:column;gap:8px;background:var(--tinta);
+  padding:12px 0 calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--linea);
 }
 .btn{
   display:flex;align-items:center;justify-content:center;gap:10px;
@@ -131,6 +138,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 /* ===== Vista previa ===== */
 .previa{
   display:flex;flex-direction:column;align-items:center;padding:26px 20px 60px;gap:14px;
+  min-height:0;overflow-y:auto;
   background:radial-gradient(circle at 70% 10%,rgba(20,160,122,.08),transparent 55%),var(--tinta);
 }
 .previa__label{
@@ -141,6 +149,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   width:min(100%,380px);height:auto;display:block;border-radius:6px;
   box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
 }
+@media(max-width:920px){.previa{display:none}} /* en el teléfono, editor a pantalla completa */
 </style>
 </head>
 <body>
@@ -161,8 +170,10 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 
     <div class="grupo">
       <label>Turnos del día</label>
-      <div id="turnos"></div>
-      <button type="button" class="agregar" id="agregar" style="margin-top:12px">+ Agregar turno</button>
+      <div class="lista-scroll">
+        <div id="turnos"></div>
+        <button type="button" class="agregar" id="agregar">+ Agregar turno</button>
+      </div>
     </div>
 
     <div class="acciones">
@@ -423,8 +434,12 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       dur: ultimo ? ultimo.dur : 60, cat:'Libres', div:'Ambas', cupos:2
     });
     pintarEditor(); pintarFlyer(); guardar();
-    var inputs = cont.querySelectorAll('.turno:last-child input');
-    if(inputs.length) inputs[0].focus();
+    var nueva = cont.querySelector('.turno:last-child');
+    if(nueva){
+      nueva.scrollIntoView({block:'nearest'});
+      var inp = nueva.querySelector('input');
+      if(inp) inp.focus({preventScroll:true});
+    }
   });
 
   /* ---------- hora: "18" → "18:00", "1830" → "18:30" ---------- */
