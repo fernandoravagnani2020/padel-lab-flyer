@@ -133,6 +133,8 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 .btn--verde[disabled]{opacity:.5;cursor:wait}
 .btn--gris{background:none;border:1px solid var(--linea);color:var(--crema-dim)}
 .btn--gris:hover{border-color:#d66;color:#e88}
+.btn--enlace{background:none;border:1px solid var(--cancha);color:var(--cancha-hi)}
+.btn--enlace:hover{background:rgba(20,160,122,.12)}
 .aviso{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--crema-dim);text-align:center}
 
 /* ===== Vista previa ===== */
@@ -182,6 +184,10 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
         Descargar flyer (1080×1920)
       </button>
       <button class="btn btn--gris" id="limpiar">Vaciar turnos</button>
+      <button class="btn btn--enlace" id="copiar-wsp">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.4 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1 0-1.5.8-2.2 1-2.5.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.4.9-.9 1-.7 1.4.9 1.5 2 2.4 3.3 3 .3.2.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.2.5.2.6.4 0 .1 0 .7-.2 1.4Z"/></svg>
+        Copiar link de reserva
+      </button>
       <p class="aviso">Los datos quedan guardados en este teléfono.</p>
     </div>
   </aside>
@@ -486,6 +492,35 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       btn.disabled = false;
       btn.innerHTML = original;
     });
+  });
+
+  /* ---------- copiar link de reserva (WhatsApp de German) ---------- */
+  var LINK_RESERVA = 'https://wa.me/5493582432355?text=' +
+    encodeURIComponent('Hola German, quiero reservar una clase en Pádel Lab Academy');
+
+  document.getElementById('copiar-wsp').addEventListener('click', function(){
+    var btn = this;
+    var original = btn.innerHTML;
+    function listo(ok){
+      btn.textContent = ok ? '¡Link copiado!' : 'No se pudo copiar';
+      setTimeout(function(){ btn.innerHTML = original; }, 2000);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(LINK_RESERVA).then(function(){ listo(true); }, function(){ copiarViejo(); });
+    } else {
+      copiarViejo();
+    }
+    function copiarViejo(){
+      var ta = document.createElement('textarea');
+      ta.value = LINK_RESERVA;
+      ta.style.cssText = 'position:fixed;left:-1000px;top:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try{ ok = document.execCommand('copy'); }catch(e){}
+      ta.remove();
+      listo(ok);
+    }
   });
 
   /* ---------- vaciar ---------- */
