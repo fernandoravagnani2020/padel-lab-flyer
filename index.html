@@ -207,11 +207,26 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   var DIVISIONES = ['Ambas','Masculina','Femenina'];
   var CLAVE = 'padellab-flyer-v2';
 
-  /* ===== Colores y métricas de la plantilla (medidos del ejemplo aprobado) ===== */
+  /* ===== Paletas por plantilla (clara = crema, oscura = verde tinta) ===== */
+  var PALETAS = {
+    clara: {
+      texto:'#16181A', verde:'#14A07A', grisTexto:'#8E8C85',
+      apagado:'#A5A39B', apagadoSub:'#B3B1A9', bordeApagado:'#C6C4BB',
+      linea:'#DBD8CF', chipTexto:'#0F8666', chipFondo:'rgba(20,160,122,.10)', chipBorde:'rgba(20,160,122,.55)',
+      fondo:'#EDEAE2'
+    },
+    oscura: {
+      texto:'#EAF1EC', verde:'#14A07A', grisTexto:'#8A968F',
+      apagado:'#5C6862', apagadoSub:'#525D57', bordeApagado:'#3A453F',
+      linea:'#232E28', chipTexto:'#2BC79B', chipFondo:'rgba(20,160,122,.14)', chipBorde:'rgba(20,160,122,.65)',
+      fondo:'#0A1410'
+    }
+  };
+  var PLANTILLA_SRC = 'assets/plantilla2.png';
+  var PALETA = PALETAS.oscura;
+
+  /* ===== Métricas de la plantilla (medidas del ejemplo aprobado) ===== */
   var T = {
-    tinta:'#16181A', verde:'#14A07A', grisTexto:'#8E8C85',
-    apagado:'#A5A39B', apagadoSub:'#B3B1A9', bordeApagado:'#C6C4BB',
-    linea:'#DBD8CF', chipTexto:'#0F8666', chipFondo:'rgba(20,160,122,.10)', chipBorde:'rgba(20,160,122,.55)',
     margen:96, derecha:984,
     tituloX:92, titulo1Y:471, titulo2Y:580, tituloPx:124,
     listaY:682, filaAlto:155.5, filaMax:6, listaFin:1615,
@@ -242,7 +257,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   var ctx = lienzo.getContext('2d');
   var plantilla = new Image();
   var plantillaLista = new Promise(function(res){ plantilla.onload = res; plantilla.onerror = res; });
-  plantilla.src = 'assets/plantilla.png';
+  plantilla.src = PLANTILLA_SRC;
 
   var fuentesListas = Promise.all([
     document.fonts.load('700 '+T.tituloPx+'px "Space Grotesk"'),
@@ -289,20 +304,20 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   function render(){
     ctx.clearRect(0,0,1080,1920);
     if(plantilla.complete && plantilla.naturalWidth) ctx.drawImage(plantilla,0,0,1080,1920);
-    else { ctx.fillStyle = '#EDEAE2'; ctx.fillRect(0,0,1080,1920); }
+    else { ctx.fillStyle = PALETA.fondo; ctx.fillRect(0,0,1080,1920); }
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'left';
 
     /* título: día + fecha */
     var p = estado.fecha.split('-');
     var f = new Date(+p[0], +p[1]-1, +p[2]);
-    ctx.fillStyle = T.tinta;
+    ctx.fillStyle = PALETA.texto;
     ctx.font = '700 '+T.tituloPx+'px "Space Grotesk"';
     dibujarTracked(DIAS_SEMANA[f.getDay()], T.tituloX, T.titulo1Y, -2);
     var dia = String(f.getDate());
     dibujarTracked(dia, T.tituloX, T.titulo2Y, -2);
     var wDia = medirTracked(dia, -2) + ctx.measureText(' ').width + 6;
-    ctx.fillStyle = T.verde;
+    ctx.fillStyle = PALETA.verde;
     dibujarTracked(MESES[f.getMonth()], T.tituloX + wDia, T.titulo2Y, -2);
 
     /* filas de turnos */
@@ -314,7 +329,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     var compacta = paso < T.filaAlto ? paso / T.filaAlto : 1;
 
     function lineaDivisoria(y){
-      ctx.fillStyle = T.linea;
+      ctx.fillStyle = PALETA.linea;
       ctx.fillRect(T.margen, y, T.derecha - T.margen, 2);
     }
 
@@ -325,7 +340,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       lineaDivisoria(yTop);
 
       /* hora */
-      ctx.fillStyle = sin ? T.apagado : T.tinta;
+      ctx.fillStyle = sin ? PALETA.apagado : PALETA.texto;
       ctx.font = '700 '+Math.round(T.horaPx*compacta)+'px "Space Grotesk"';
       ctx.fillText(t.hora || '--:--', T.margen, centro + Math.round(T.horaDy*compacta));
 
@@ -336,16 +351,16 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       var chipH = 52, chipW = wChipTexto + 60;
       var chipX = T.derecha - chipW, chipY = centro - chipH/2;
       pastilla(chipX, chipY, chipW, chipH, chipH/2);
-      if(!sin){ ctx.fillStyle = T.chipFondo; ctx.fill(); }
+      if(!sin){ ctx.fillStyle = PALETA.chipFondo; ctx.fill(); }
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = sin ? T.bordeApagado : T.chipBorde;
+      ctx.strokeStyle = sin ? PALETA.bordeApagado : PALETA.chipBorde;
       ctx.stroke();
-      ctx.fillStyle = sin ? T.apagado : T.chipTexto;
+      ctx.fillStyle = sin ? PALETA.apagado : PALETA.chipTexto;
       dibujarTracked(chipTexto, chipX + (chipW - wChipTexto)/2, centro + 7, 3);
 
       /* nombre de la clase */
       var xInfo = T.infoX, anchoInfo = chipX - 30 - xInfo;
-      ctx.fillStyle = sin ? T.apagado : T.tinta;
+      ctx.fillStyle = sin ? PALETA.apagado : PALETA.texto;
       var nombrePx = Math.round(T.nombrePx * compacta);
       ctx.font = '700 '+nombrePx+'px "Space Grotesk"';
       var nombre = t.titulo || 'Clase';
@@ -356,7 +371,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       ctx.fillText(nombre, xInfo, centro + Math.round(T.nombreDy*compacta));
 
       /* bajada técnica */
-      ctx.fillStyle = sin ? T.apagadoSub : T.grisTexto;
+      ctx.fillStyle = sin ? PALETA.apagadoSub : PALETA.grisTexto;
       var subPx = T.subPx, subTexto = subtitulo(t);
       ctx.font = '600 '+subPx+'px "JetBrains Mono"';
       while(medirTracked(subTexto, 3.5) > anchoInfo && subPx > 13){
