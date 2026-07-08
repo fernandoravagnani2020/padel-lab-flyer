@@ -214,8 +214,9 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
     linea:'#DBD8CF', chipTexto:'#0F8666', chipFondo:'rgba(20,160,122,.10)', chipBorde:'rgba(20,160,122,.55)',
     margen:96, derecha:984,
     tituloX:92, titulo1Y:471, titulo2Y:580, tituloPx:124,
-    listaY:670, filaAlto:143, filaMax:6, listaFin:1620,
-    horaPx:62, nombrePx:36, subPx:20, chipPx:20
+    listaY:682, filaAlto:155.5, filaMax:6, listaFin:1615,
+    horaPx:62, nombrePx:36, subPx:20, chipPx:20,
+    infoX:326, horaDy:20, nombreDy:-4, subDy:37
   };
 
   function manana(){
@@ -326,7 +327,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       /* hora */
       ctx.fillStyle = sin ? T.apagado : T.tinta;
       ctx.font = '700 '+Math.round(T.horaPx*compacta)+'px "Space Grotesk"';
-      ctx.fillText(t.hora || '--:--', T.margen, centro + Math.round(21*compacta));
+      ctx.fillText(t.hora || '--:--', T.margen, centro + Math.round(T.horaDy*compacta));
 
       /* chip (se dibuja antes para saber cuánto lugar queda) */
       var chipTexto = sin ? 'COMPLETO' : t.cupos + ' ' + (t.cupos===1 ? 'CUPO' : 'CUPOS');
@@ -343,7 +344,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
       dibujarTracked(chipTexto, chipX + (chipW - wChipTexto)/2, centro + 7, 3);
 
       /* nombre de la clase */
-      var xInfo = 324, anchoInfo = chipX - 30 - xInfo;
+      var xInfo = T.infoX, anchoInfo = chipX - 30 - xInfo;
       ctx.fillStyle = sin ? T.apagado : T.tinta;
       var nombrePx = Math.round(T.nombrePx * compacta);
       ctx.font = '700 '+nombrePx+'px "Space Grotesk"';
@@ -352,7 +353,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
         nombrePx -= 1;
         ctx.font = '700 '+nombrePx+'px "Space Grotesk"';
       }
-      ctx.fillText(nombre, xInfo, centro - Math.round(2*compacta));
+      ctx.fillText(nombre, xInfo, centro + Math.round(T.nombreDy*compacta));
 
       /* bajada técnica */
       ctx.fillStyle = sin ? T.apagadoSub : T.grisTexto;
@@ -362,7 +363,7 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
         subPx -= 1;
         ctx.font = '600 '+subPx+'px "JetBrains Mono"';
       }
-      dibujarTracked(subTexto, xInfo, centro + Math.round(56*compacta) - (paso < 100 ? 6 : 0), 3.5);
+      dibujarTracked(subTexto, xInfo, centro + Math.round(T.subDy*compacta), 3.5);
     });
     lineaDivisoria(T.listaY + paso * turnos.length);
   }
